@@ -18,10 +18,10 @@ A full-featured discussion forum web application that allows users to create top
 | Layer         | Technology                        |
 |---------------|-----------------------------------|
 | Frontend      | Next                              |
-| Backend       | Node.js /                         |
-| Database      | PostgreSQL /                      |
-| Authentication| JWT / OAuth2                      |
-| Styling       | Tailwind CSS /                    |
+| Backend       | Node.js                           |
+| Database      | PostgreSQL                         |
+| Authentication| JWT                                |
+| Styling       | Tailwind CSS                       |
 
 ## 📦 Installation
 
