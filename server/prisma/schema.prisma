@@ -1,10 +1,10 @@
-datasource db {
-  provider = "postgresql"
-}
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated"
+}
+
+datasource db {
+  provider = "postgresql"
 }
 
 model User {
@@ -14,9 +14,9 @@ model User {
   lastName  String
   email     String     @unique
   password  String
-  questions Question[]
-  answers   Answer[]
   createdAt DateTime   @default(now())
+  answers   Answer[]
+  questions Question[]
 }
 
 model Question {
@@ -24,10 +24,10 @@ model Question {
   title     String
   body      String
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  answers   Answer[]
   tag       String
   createdAt DateTime @default(now())
+  answers   Answer[]
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Answer {
@@ -35,7 +35,7 @@ model Answer {
   answerBody String
   questionId Int
   userId     Int
+  createdAt  DateTime @default(now())
   question   Question @relation(fields: [questionId], references: [id])
   user       User     @relation(fields: [userId], references: [id])
-  createdAt  DateTime @default(now())
 }
