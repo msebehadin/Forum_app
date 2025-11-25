@@ -3,7 +3,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated"
 }
 
 model User {
@@ -19,21 +20,22 @@ model User {
 }
 
 model Question {
-  id        Int       @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   title     String
   body      String
   userId    Int
-  user      User      @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
   answers   Answer[]
-  createdAt DateTime  @default(now())
+  tag       String
+  createdAt DateTime @default(now())
 }
 
 model Answer {
-  id         Int       @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   answerBody String
   questionId Int
   userId     Int
-  question   Question  @relation(fields: [questionId], references: [id])
-  user       User      @relation(fields: [userId], references: [id])
-  createdAt  DateTime  @default(now())
+  question   Question @relation(fields: [questionId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
 }
