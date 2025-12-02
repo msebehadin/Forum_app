@@ -1,44 +1,35 @@
-import express, { Request, Response } from "express";
-import cors from "cors";
-import dotenv from "dotenv";
+import express from 'express';
+import dotenv from 'dotenv';
+import { prisma } from './config/db';
 import authRoutes from './modules/auth/auth.routes'
 dotenv.config();
 
-
-import { prisma } from "./config/db";
-
 const app = express();
-
-app.use(cors());
 app.use(express.json());
 
-// Test root route
-app.get("/", (req, res) => {
-  res.json({ message: "API running" });
-});
-app.use('/api/auth',authRoutes)
-// Test DB connection at startup
-async function testDbConnection() {
+app.get('/', (_req, res) => res.json({ message: 'API running' }));
+
+
+// Connect to the database
+(async () => {
   try {
     await prisma.$connect();
-    console.log("Database connected");
+    console.log('database connected');
   } catch (error) {
-    console.error("Database connection failed:", error);
+    console.error('DB connection failed', error);
   }
-}
-testDbConnection();
+})();
+app.use('/api/auth',authRoutes)
 
-// Health check route
-app.get("/api/health", async (req: Request, res: Response) => {
+app.get('/api/health', async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1;`;
-    res.status(200).json({ status: "ok", database: "connected" });
-  } catch (error) {
-    console.error("DB Health Check Failed:", error);
-    res.status(503).json({ status: "error", database: "disconnected" });
+    res.json({ status: 'ok', database: 'connected' });
+  } catch (err) {
+    res.status(503).json({ status: 'error', database: 'disconnected', error: err });
   }
 });
 
-app.listen(process.env.PORT || 4000, () => {
-  console.log("server running on port", process.env.PORT || 4000);
-});
+app.listen(process.env.PORT || 4000, () =>
+  console.log('server running on port', process.env.PORT || 4000)
+);
