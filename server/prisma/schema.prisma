@@ -8,11 +8,33 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
   firstName String
   lastName  String
-  email     String   @unique
+  email     String    @unique
   password  String
-  createdAt DateTime @default(now())
+  questions Question[]
+  answers   Answer[]
+  createdAt DateTime  @default(now())
+}
+
+model Question {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
+  answers     Answer[]
+  createdAt   DateTime  @default(now())
+}
+
+model Answer {
+  id         Int      @id @default(autoincrement())
+  answer     String
+  questionId Int
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  question   Question @relation(fields: [questionId], references: [id])
+  createdAt  DateTime @default(now())
 }

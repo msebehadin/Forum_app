@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'  // Fixed: imported jwt directly
 
 
-export const register = async (data: RegisterInput) => {
+export const register = async (data: { email: any; password: string; }) => {
     try {
         // Check if user exists
         const exists = await prisma.user.findUnique({ 
