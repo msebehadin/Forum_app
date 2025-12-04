@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 :root {
   --primary-color: #fe8402;
   --primary-shade: #fc9b34;
@@ -12,6 +10,6 @@
 }
 
 body {
-  background-color: white;
+  
   color: var(--foreground);
 }
