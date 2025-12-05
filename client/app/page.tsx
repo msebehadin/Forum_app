@@ -1,10 +1,11 @@
+import HomePage from "@/components/pages/landingPage"
 
 const Page = () => {
   return (
     <div
-      className="bg-[url('/evangadi-logo-header.png')] bg-cover bg-no-repeat bg-center min-h-screen"
+      
     >
-      Page
+      <HomePage/>
     </div>
   )
 }

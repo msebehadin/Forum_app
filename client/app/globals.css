@@ -10,6 +10,12 @@
 }
 
 body {
-  
+  background-image: url('/evangadi-logo-header.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-height: 100vh;
+
   color: var(--foreground);
+  font-family: var(--body-text-font), sans-serif;
 }

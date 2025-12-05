@@ -1,9 +1,18 @@
-import React from 'react'
-
-const Page = () => {
+export default function HomePage() {
   return (
-    <div>Page</div>
-  )
+    <div
+      className="
+        min-h-screen
+        bg-[url('/background.jpg')]
+        bg-cover
+        bg-center
+        bg-no-repeat
+        fle
+        items-center
+        justify-center
+      "
+    >
+   
+    </div>
+  );
 }
-
-export default Page
