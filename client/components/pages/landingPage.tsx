@@ -1,3 +1,5 @@
+import LoginPage from "./login";
+
 export default function HomePage() {
   return (
     <div
@@ -12,7 +14,7 @@ export default function HomePage() {
         justify-center
       "
     >
-   
+   <LoginPage/>
     </div>
   );
 }
