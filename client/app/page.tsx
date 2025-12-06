@@ -2,9 +2,14 @@ import HomePage from "@/components/pages/landingPage";
 
 const Page = () => {
   return (
-    <div>
-      <HomePage />
-    </div>
+    <>
+      <div className="app-container">
+
+      </div>
+      <div className="background-section">
+        <HomePage />
+      </div>
+    </>
   );
 };
 
