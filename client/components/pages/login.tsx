@@ -38,11 +38,11 @@ export default function LoginPage() {
 
       login({ token: data.token, user: data.user });
       router.push("/questions");
-    } catch (err: any) {
+    } catch (e: any) {
       const msg =
-        err?.response?.data?.message || err?.response?.data?.error;
+        e?.response?.data?.message || e?.response?.data?.error;
 
-      if (err?.response?.status === 400 && err?.response?.data?.errors) {
+      if (e?.response?.status === 400 && e?.response?.data?.errors) {
         const zodErrors = err.response.data.errors;
 
         zodErrors.forEach((e: any) => {
@@ -138,9 +138,9 @@ export default function LoginPage() {
         <div className="px-4 md:px-8">
           <h2 className="text-lg font-semibold text-[#fe8402] mb-2">About</h2>
 
-          <h1 className="text-4xl font-extrabold text-purple-800 mb-4 leading-tight">
+          <h3 className="text-6xl font-extrabold text-purple-800 mb-4 leading-tight">
             Evangadi Networks
-          </h1>
+          </h3>
 
           <p className="text-gray-700 leading-relaxed mb-4 text-lg">
             No matter what stage of life you are in, whether you’re just starting
