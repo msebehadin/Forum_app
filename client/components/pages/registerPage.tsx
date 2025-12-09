@@ -4,54 +4,118 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox" // You'll need this component
-import { useRouter } from "next/navigation" // Changed from next/router to next/navigation
+import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/useAuthStore"
 import { registerInput, registerSchema } from "@/schema/auth"
-import { useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/libs/axios"
+import { useState } from "react"
 
 const RegisterPage = () => {
   const router = useRouter();
-  const { login } = useAuthStore(); // Changed from 'register' to 'login' if that's what your store has
+  const { login } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(false);
   
   const {
     register,
     handleSubmit,
     setError,
-    formState: { errors, isSubmitting },
-  } = useForm<registerInput>({ resolver: zodResolver(registerSchema) })
+    formState: { errors },
+  } = useForm<registerInput>({ 
+    resolver: zodResolver(registerSchema) 
+  })
   
   const onSubmit = async (value: registerInput) => {
+    setIsLoading(true);
+    console.log('🔵 Registration attempt with:', value.email);
+    
     try {
       const res = await api.post('/auth/register', value);
-      const data = res.data;
+      console.log('✅ Registration response:', res.data);
       
-      if (!data?.token || !data?.user) {
-        setError('email', { message: 'Invalid server response' });
+      const responseData = res.data;
+      
+    
+      
+      let token, userData;
+      
+      // Check for registration structure first
+      if (responseData.user && responseData.user.token) {
+        // Registration structure: data.user.token and data.user.user
+        token = responseData.user.token;
+        userData = responseData.user.user || responseData.user;
+        console.log('🔍 Using registration structure');
+      } 
+      // Check for login-like structure
+      else if (responseData.data && responseData.data.token) {
+        // Login-like structure: data.data.token and data.data.user
+        token = responseData.data.token;
+        userData = responseData.data.user;
+        console.log(' Using login-like structure');
+      }
+      // Check for flat structure
+      else if (responseData.token) {
+        // Flat structure: data.token and data.user
+        token = responseData.token;
+        userData = responseData.user;
+        console.log('Using flat structure');
+      }
+      
+      console.log(' Extracted token:', token ? 'Yes' : 'No');
+      console.log('🔍 Extracted user:', userData ? 'Yes' : 'No');
+      
+      if (!token || !userData) {
+        console.error('❌ Missing token or user in response:', responseData);
+        setError("email", { 
+          message: "Registration successful but no token received" 
+        });
+        setIsLoading(false);
         return;
       }
       
-      login({ token: data.token, user: data.user }); // Changed from register to login
-      router.push('/questions')
+      // Remove password from user object if present
+      let userWithoutPassword = userData;
+      if (userData.password) {
+        const { password, ...rest } = userData;
+        userWithoutPassword = rest;
+      }
+      
+      console.log('✅ Registration successful!');
+      console.log('✅ Token:', token.substring(0, 20) + '...');
+      console.log('✅ User:', userWithoutPassword);
+      
+      // Auto-login after registration
+      login({ token: token, user: userWithoutPassword });
+      router.push('/questions');
       
     } catch (err: any) {
-      const msg = err?.response?.data?.message || err?.response?.data?.error;
-
+      console.error('❌ Registration error:', err);
+      
+      if (err.response) {
+        console.error('❌ Response status:', err.response.status);
+        console.error('❌ Response data:', err.response.data);
+      }
+      
+      const msg = err?.response?.data?.message || 
+                  err?.response?.data?.error || 
+                  "Registration failed";
+      
       if (err?.response?.status === 400 && err?.response?.data?.errors) {
         const zodErrors = err.response.data.errors;
-        
         zodErrors.forEach((error: any) => {
           const path = Array.isArray(error.path)
             ? error.path[error.path.length - 1]
             : error.path;
           if (path) setError(path as any, { message: error.message });
         });
+        setIsLoading(false);
         return;
       }
-
+      
       setError("email", { message: msg || "Something went wrong" });
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -92,7 +156,7 @@ const RegisterPage = () => {
                 )}
               </div>
 
-              {/* First and Last Name in one row */}
+              {/* First and Last Name */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-3">
                   <Label htmlFor="firstName" className="text-gray-700 font-medium">
@@ -178,7 +242,7 @@ const RegisterPage = () => {
                 )}
               </div>
 
-              {/* Terms and Conditions Checkbox */}
+              {/* Terms and Conditions */}
               <div className="flex items-center space-x-2">
                 <input
                   type="checkbox"
@@ -204,13 +268,13 @@ const RegisterPage = () => {
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isLoading}
                 className="w-full h-12 bg-gradient-to-r from-[#FF6B00] to-[#FF8C00] hover:from-[#FF8C00] hover:to-[#FF9D33] text-white font-bold text-lg rounded-md"
               >
-                {isSubmitting ? "Processing..." : "Agree and Join"}
+                {isLoading ? "Creating account..." : "Agree and Join"}
               </Button>
 
-              {/* Already have account link at bottom */}
+              {/* Already have account link */}
               <div className="text-center pt-4">
                 <p className="text-gray-600">
                   Already have an account?{" "}
@@ -238,7 +302,7 @@ const RegisterPage = () => {
         </div>
       </div>
 
-      {/* Right: About Section (Desktop) */}
+      {/* Right: About Section */}
       <div className="hidden lg:flex w-1/2 flex-col justify-center items-center bg-gradient-to-b from-[#FF6B00] to-[#FF8C00] p-10 text-center text-white">
         <div className="max-w-lg">
           <h2 className="text-3xl font-bold mb-6">About</h2>
