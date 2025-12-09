@@ -1,25 +1,32 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors'; 
 import { prisma } from './config/db';
-import authRoutes from './modules/auth/auth.routes'
+import authRoutes from './modules/auth/auth.routes';
+
 dotenv.config();
 
 const app = express();
+
 app.use(express.json());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true 
+}));
 
 app.get('/', (_req, res) => res.json({ message: 'API running' }));
-
 
 // Connect to the database
 (async () => {
   try {
     await prisma.$connect();
-    console.log('database connected');
+    console.log('Database connected');
   } catch (error) {
     console.error('DB connection failed', error);
   }
 })();
-app.use('/api/auth',authRoutes)
+
+app.use('/api/auth', authRoutes);
 
 app.get('/api/health', async (_req, res) => {
   try {
@@ -30,6 +37,8 @@ app.get('/api/health', async (_req, res) => {
   }
 });
 
-app.listen(process.env.PORT || 4000, () =>
-  console.log('server running on port', process.env.PORT || 4000)
-);
+
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
