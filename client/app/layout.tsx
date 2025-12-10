@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import "./globals.css";
 import NavBar from "@/components/pages/navBar";
+import Footer from "@/components/pages/footer";
 
 export const metadata: Metadata = {
   title: "Evangadi Forum",
@@ -19,6 +20,7 @@ export default function RootLayout({
         <NavBar />
 
         <main >{children}</main>
+        <Footer/>
       </body>
     </html>
   );

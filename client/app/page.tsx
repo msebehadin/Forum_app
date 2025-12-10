@@ -1,4 +1,5 @@
-import HomePage from "@/components/pages/landingPage";
+import LoginPage from "@/components/pages/login";
+
 
 const Page = () => {
   return (
@@ -7,7 +8,7 @@ const Page = () => {
 
       </div>
       <div className="background-section">
-        <HomePage />
+        <LoginPage/>
       </div>
     </>
   );

@@ -1,11 +1,12 @@
 
-import LoginPage from "./login";
+import LoginPage from './login'
 
-export default function HomePage() {
+const LandingPage = () => {
   return (
-    <div className="flex min-h-screen">
-      <LoginPage />
-      
+    <div>
+        <LoginPage/>
     </div>
-  );
+  )
 }
+
+export default LandingPage

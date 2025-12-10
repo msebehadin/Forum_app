@@ -56,7 +56,7 @@ const RegisterPage = () => {
         return;
       }
       
-      // Remove password from user object
+      // Remove password from user object  for security purpose 
       let userWithoutPassword = userData;
       if (userData.password) {
         const { password, ...rest } = userData;
@@ -109,7 +109,7 @@ const RegisterPage = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left: Register Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center bg-gray-50 p-4 lg:p-8">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 lg:p-8">
         <div className="w-full max-w-md space-y-6">
           <div className="bg-white rounded-xl shadow-lg p-8 lg:p-10">
             <div className="text-center space-y-4 mb-8">
@@ -222,24 +222,6 @@ const RegisterPage = () => {
                 />
                 {errors.password && (
                   <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
-                )}
-              </div>
-
-              {/* Confirm Password */}
-              <div className="space-y-3">
-                <Label htmlFor="confirmPassword" className="text-gray-700 font-medium">
-                  Confirm Password
-                </Label>
-                <Input
-                  id="confirmPassword"
-                  {...register("confirmPassword")}
-                  type="password"
-                  placeholder="Confirm your password"
-                  className="h-12 bg-gray-50 border-gray-300 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[#FF6B00]"
-                  disabled={isLoading}
-                />
-                {errors.confirmPassword && (
-                  <p className="text-sm text-red-500 mt-1">{errors.confirmPassword.message}</p>
                 )}
               </div>
 

@@ -1,9 +1,10 @@
-import LoginPage from "@/components/pages/login"
+import LandingPage from "@/components/pages/landingPage"
+
 
 const Page = () => {
   return (
     <div>
-        <LoginPage/>
+<LandingPage/>
     </div>
   )
 }
