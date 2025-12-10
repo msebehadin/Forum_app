@@ -16,6 +16,7 @@ const RegisterPage = () => {
   const router = useRouter();
   const { login } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
   
   const {
     register,
@@ -28,73 +29,59 @@ const RegisterPage = () => {
   
   const onSubmit = async (value: registerInput) => {
     setIsLoading(true);
-    console.log('🔵 Registration attempt with:', value.email);
+    console.log('Registration attempt with:', value.email);
     
     try {
       const res = await api.post('/auth/register', value);
-      console.log('✅ Registration response:', res.data);
-      
-      const responseData = res.data;
+      console.log('Registration response:', res.data);
       
     
+
+
+      const responseData = res.data;
       
-      let token, userData;
+      // Extract token and user from the nested structure
+      const token = responseData.user?.token;
+      const userData = responseData.user?.user || responseData.user;
       
-      // Check for registration structure first
-      if (responseData.user && responseData.user.token) {
-        // Registration structure: data.user.token and data.user.user
-        token = responseData.user.token;
-        userData = responseData.user.user || responseData.user;
-        console.log('🔍 Using registration structure');
-      } 
-      // Check for login-like structure
-      else if (responseData.data && responseData.data.token) {
-        // Login-like structure: data.data.token and data.data.user
-        token = responseData.data.token;
-        userData = responseData.data.user;
-        console.log(' Using login-like structure');
-      }
-      // Check for flat structure
-      else if (responseData.token) {
-        // Flat structure: data.token and data.user
-        token = responseData.token;
-        userData = responseData.user;
-        console.log('Using flat structure');
-      }
-      
-      console.log(' Extracted token:', token ? 'Yes' : 'No');
-      console.log('🔍 Extracted user:', userData ? 'Yes' : 'No');
+      console.log('Token extracted:', token ? 'Yes' : 'No');
+      console.log('User data extracted:', userData ? 'Yes' : 'No');
       
       if (!token || !userData) {
-        console.error('❌ Missing token or user in response:', responseData);
+        console.log('Full response structure:', responseData);
         setError("email", { 
-          message: "Registration successful but no token received" 
+          message: "Registration completed but could not get login token. Please login manually." 
         });
         setIsLoading(false);
         return;
       }
       
-      // Remove password from user object if present
+      // Remove password from user object
       let userWithoutPassword = userData;
       if (userData.password) {
         const { password, ...rest } = userData;
         userWithoutPassword = rest;
       }
       
-      console.log('✅ Registration successful!');
-      console.log('✅ Token:', token.substring(0, 20) + '...');
-      console.log('✅ User:', userWithoutPassword);
+      console.log('Registration successful');
       
-      // Auto-login after registration
+      // Store authentication
       login({ token: token, user: userWithoutPassword });
-      router.push('/questions');
+      
+      // Show success message
+      setRegistrationSuccess(true);
+      
+      // Wait a moment then redirect
+      setTimeout(() => {
+        router.push('/questions');
+      }, 1500);
       
     } catch (err: any) {
-      console.error('❌ Registration error:', err);
+      console.error('Registration error:', err);
       
       if (err.response) {
-        console.error('❌ Response status:', err.response.status);
-        console.error('❌ Response data:', err.response.data);
+        console.error('Response status:', err.response.status);
+        console.error('Response data:', err.response.data);
       }
       
       const msg = err?.response?.data?.message || 
@@ -138,6 +125,14 @@ const RegisterPage = () => {
               </p>
             </div>
 
+            {/* Success Message */}
+            {registrationSuccess && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-green-700 font-medium">Registration successful!</p>
+                <p className="text-green-600 text-sm mt-1">Redirecting to questions page...</p>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Username */}
               <div className="space-y-3">
@@ -150,6 +145,7 @@ const RegisterPage = () => {
                   type="text"
                   placeholder="Enter your username"
                   className="h-12 bg-gray-50 border-gray-300 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[#FF6B00]"
+                  disabled={isLoading}
                 />
                 {errors.username && (
                   <p className="text-sm text-red-500 mt-1">{errors.username.message}</p>
@@ -168,6 +164,7 @@ const RegisterPage = () => {
                     type="text"
                     placeholder="Enter first name"
                     className="h-12 bg-gray-50 border-gray-300 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[#FF6B00]"
+                    disabled={isLoading}
                   />
                   {errors.firstName && (
                     <p className="text-sm text-red-500 mt-1">{errors.firstName.message}</p>
@@ -184,6 +181,7 @@ const RegisterPage = () => {
                     type="text"
                     placeholder="Enter last name"
                     className="h-12 bg-gray-50 border-gray-300 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[#FF6B00]"
+                    disabled={isLoading}
                   />
                   {errors.lastName && (
                     <p className="text-sm text-red-500 mt-1">{errors.lastName.message}</p>
@@ -202,6 +200,7 @@ const RegisterPage = () => {
                   type="email"
                   placeholder="Enter your email"
                   className="h-12 bg-gray-50 border-gray-300 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[#FF6B00]"
+                  disabled={isLoading}
                 />
                 {errors.email && (
                   <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
@@ -219,6 +218,7 @@ const RegisterPage = () => {
                   type="password"
                   placeholder="Enter your password"
                   className="h-12 bg-gray-50 border-gray-300 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[#FF6B00]"
+                  disabled={isLoading}
                 />
                 {errors.password && (
                   <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
@@ -236,6 +236,7 @@ const RegisterPage = () => {
                   type="password"
                   placeholder="Confirm your password"
                   className="h-12 bg-gray-50 border-gray-300 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[#FF6B00]"
+                  disabled={isLoading}
                 />
                 {errors.confirmPassword && (
                   <p className="text-sm text-red-500 mt-1">{errors.confirmPassword.message}</p>
@@ -249,6 +250,7 @@ const RegisterPage = () => {
                   id="terms"
                   {...register("terms")}
                   className="h-4 w-4 rounded border-gray-300 text-[#FF6B00] focus:ring-[#FF6B00]"
+                  disabled={isLoading}
                 />
                 <Label htmlFor="terms" className="text-gray-600 text-sm">
                   I agree to the{" "}
@@ -268,10 +270,10 @@ const RegisterPage = () => {
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || registrationSuccess}
                 className="w-full h-12 bg-gradient-to-r from-[#FF6B00] to-[#FF8C00] hover:from-[#FF8C00] hover:to-[#FF9D33] text-white font-bold text-lg rounded-md"
               >
-                {isLoading ? "Creating account..." : "Agree and Join"}
+                {isLoading ? "Creating account..." : registrationSuccess ? "Account Created!" : "Agree and Join"}
               </Button>
 
               {/* Already have account link */}

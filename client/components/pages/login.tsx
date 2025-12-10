@@ -30,15 +30,13 @@ export default function LoginPage() {
 
   const onSubmit = async (value: LoginInput) => {
     setIsLoading(true);
-    console.log('🔵 Login attempt with:', value.email);
+    console.log('Login attempt with:', value.email);
     
     try {
       const res = await api.post("/auth/login", value);
-      console.log('✅ Login response:', res.data);
+      console.log('login response:', res.data);
       
-      // ⚠️ FIX 1: The response structure is different!
-      // Your backend returns: { success, message, data: { token, user } }
-      // NOT: { token, user }
+
       
       const responseData = res.data;
       
@@ -111,7 +109,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-white">
+    <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-white w-scren">
       <div className="max-w-6xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
         
         {/* LEFT — Login Card */}
