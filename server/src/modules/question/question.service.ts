@@ -1,4 +1,4 @@
-import { id, tr } from "zod/v4/locales";
+
 import { prisma } from "../../config/db";
 export const createQuestion = async (userId: number, data: any) => {
   return await prisma.question.create({
