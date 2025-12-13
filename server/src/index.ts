@@ -3,7 +3,8 @@ import dotenv from 'dotenv';
 import cors from 'cors'; 
 import { prisma } from './config/db';
 import authRoutes from './modules/auth/auth.routes';
-
+import questionRoute from './modules/question/question.routes'
+import answerRoute from './modules/answer/answer.route'
 dotenv.config();
 
 const app = express();
@@ -27,7 +28,8 @@ app.get('/', (_req, res) => res.json({ message: 'API running' }));
 })();
 
 app.use('/api/auth', authRoutes);
-
+app.use('/api/question',questionRoute)
+app.use('/api/answer',answerRoute)
 app.get('/api/health', async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1;`;
