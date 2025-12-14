@@ -17,9 +17,9 @@ export const getAllQuestion = async () => {
     },
   });
 };
-export const getQuestionId = async (id: number) => {
+export const getQuestionId = async (id: string) => {
   const question = await prisma.question.findUnique({
-    where: { id },
+    where: { id:Number(id) },
     include: {
       user: { select: { username: true } },
       answers: {
