@@ -23,6 +23,7 @@ export const authMiddleware = (
       username: string;
     };
     req.user = decoded;
+    next()
   } catch (err: any) {
     return res.status(401).json({
       message: "Invalid or expired token",
