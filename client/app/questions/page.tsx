@@ -1,6 +1,6 @@
-"use client";
+"use client"
 import { useAuthStore } from "@/store/useAuthStore";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { api } from "@/libs/axios";
 import { Button } from "@/components/ui/button";
