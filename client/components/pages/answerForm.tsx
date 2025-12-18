@@ -21,7 +21,7 @@ const AnswerForm = ({ questionId, onAnswerPosted }: AnswerFormProps) => {
 
     try {
      const res= await api.post(`/answer/${questionId}`, { answer })
-      setAnswer('')
+      setAnswer(res.data)
       onAnswerPosted() // trigger refresh in parent
       if(res){
         console.log('the answer correctly posted')

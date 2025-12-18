@@ -5,13 +5,13 @@ import AnswerItem from '@/components/pages/answerItem'
 import { api } from '@/libs/axios'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import type { Question } from '@/types/question'
+
 
 const DetailQuestionPage = () => {
   const params = useParams()
   const id = params.id as string
 
-  const [question, setQuestion] = useState<Question | null>(null)
+  const [question, setQuestion] = useState(null)
   const [loading, setLoading] = useState(true)
 
 useEffect(() => {
@@ -65,7 +65,9 @@ useEffect(() => {
 
       {/* Answer Form */}
       <div className="mt-10">
-        <AnswerForm questionId={question.id} />
+        <AnswerForm questionId={question.id} onAnswerPosted={function (): void {
+          throw new Error('Function not implemented.')
+        } } />
       </div>
     </div>
   )
