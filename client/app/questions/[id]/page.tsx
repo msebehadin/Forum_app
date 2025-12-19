@@ -5,30 +5,35 @@ import AnswerItem from '@/components/pages/answerItem'
 import { api } from '@/libs/axios'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-
+import { Question } from '@/types' // Import your types
 
 const DetailQuestionPage = () => {
   const params = useParams()
   const id = params.id as string
 
-  const [question, setQuestion] = useState(null)
+  const [question, setQuestion] = useState<Question | null>(null)
   const [loading, setLoading] = useState(true)
 
-useEffect(() => {
-  const fetchQuestion = async () => {
-    try {
-      const res = await api.get(`/question/${id}`)
-      setQuestion(res.data)
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setLoading(false)
+  useEffect(() => {
+    const fetchQuestion = async () => {
+      try {
+        const res = await api.get<Question>(`/question/${id}`) // Type the response
+        setQuestion(res.data)
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
     }
+
+    fetchQuestion()
+  }, [id])
+
+  // Optional: Add a function to refetch after answering
+  const handleAnswerPosted = () => {
+    // Refetch the question to get updated answers
+    fetchQuestion()
   }
-
-  fetchQuestion()
-}, [id])
-
 
   if (loading) return <p className="text-center py-10">Loading...</p>
   if (!question) return <p className="text-center py-10">Question not found</p>
@@ -59,15 +64,17 @@ useEffect(() => {
             key={ans.id}
             answer={ans.answer}
             username={ans.user.username}
+            createdAt={ans.createdAt}
           />
         ))}
       </div>
 
       {/* Answer Form */}
       <div className="mt-10">
-        <AnswerForm questionId={question.id} onAnswerPosted={function (): void {
-          throw new Error('Function not implemented.')
-        } } />
+        <AnswerForm 
+          questionId={question.id} 
+          onAnswerPosted={handleAnswerPosted} 
+        />
       </div>
     </div>
   )
