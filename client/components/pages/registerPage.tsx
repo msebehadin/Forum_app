@@ -1,309 +1,80 @@
 'use client'
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useRouter } from "next/navigation"
-import { useAuthStore } from "@/store/useAuthStore"
-import { registerInput, registerSchema } from "@/schema/auth"
 import { useForm } from 'react-hook-form'
-import { zodResolver } from "@hookform/resolvers/zod"
-import { api } from "@/libs/axios"
-import { useState } from "react"
 
-const RegisterPage = () => {
-  const router = useRouter();
-  const { login } = useAuthStore();
-  const [isLoading, setIsLoading] = useState(false);
-  const [registrationSuccess, setRegistrationSuccess] = useState(false);
-  
+// Define your form data type
+type SignUpFormData = {
+  email: string
+  password: string
+  username: string
+  firstName: string
+  lastName: string
+  terms: boolean 
+}
+
+const SignUpForm = () => {
   const {
     register,
     handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm<registerInput>({ 
-    resolver: zodResolver(registerSchema) 
-  })
-  
-  const onSubmit = async (value: registerInput) => {
-    setIsLoading(true);
-    console.log('Registration attempt with:', value.email);
-    
-    try {
-      const res = await api.post('/auth/register', value);
-      console.log('Registration response:', res.data);
-      
-    
+    formState: { errors, isSubmitting },
+  } = useForm<SignUpFormData>()
 
-
-      const responseData = res.data;
-      
-      // Extract token and user from the nested structure
-      const token = responseData.user?.token;
-      const userData = responseData.user?.user || responseData.user;
-      
-      console.log('Token extracted:', token ? 'Yes' : 'No');
-      console.log('User data extracted:', userData ? 'Yes' : 'No');
-      
-      if (!token || !userData) {
-        console.log('Full response structure:', responseData);
-        setError("email", { 
-          message: "Registration completed but could not get login token. Please login manually." 
-        });
-        setIsLoading(false);
-        return;
-      }
-      
-      // Remove password from user object  for security purpose 
-      let userWithoutPassword = userData;
-      if (userData.password) {
-        const { password, ...rest } = userData;
-        userWithoutPassword = rest;
-      }
-      
-      console.log('Registration successful');
-      
-      // Store authentication
-      login({ token: token, user: userWithoutPassword });
-      
-      // Show success message
-      setRegistrationSuccess(true);
-      
-      // Wait a moment then redirect
-      setTimeout(() => {
-        router.push('/questions');
-      }, 1500);
-      
-    } catch (err: any) {
-      console.error('Registration error:', err);
-      
-      if (err.response) {
-        console.error('Response status:', err.response.status);
-        console.error('Response data:', err.response.data);
-      }
-      
-      const msg = err?.response?.data?.message || 
-                  err?.response?.data?.error || 
-                  "Registration failed";
-      
-      if (err?.response?.status === 400 && err?.response?.data?.errors) {
-        const zodErrors = err.response.data.errors;
-        zodErrors.forEach((error: any) => {
-          const path = Array.isArray(error.path)
-            ? error.path[error.path.length - 1]
-            : error.path;
-          if (path) setError(path as any, { message: error.message });
-        });
-        setIsLoading(false);
-        return;
-      }
-      
-      setError("email", { message: msg || "Something went wrong" });
-    } finally {
-      setIsLoading(false);
-    }
+  const onSubmit = async (data: SignUpFormData) => {
+    console.log(data)
+    // Your submission logic
   }
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left: Register Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 lg:p-8">
-        <div className="w-full max-w-md space-y-6">
-          <div className="bg-white rounded-xl shadow-lg p-8 lg:p-10">
-            <div className="text-center space-y-4 mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Join the network</h1>
-              <p className="text-gray-600">
-                Already have an account?{" "}
-                <Link
-                  href="/login"
-                  className="font-semibold text-[#FF6B00] hover:text-[#FF8C00] underline underline-offset-2"
-                >
-                  Sign in
-                </Link>
-              </p>
-            </div>
-
-            {/* Success Message */}
-            {registrationSuccess && (
-              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-green-700 font-medium">Registration successful!</p>
-                <p className="text-green-600 text-sm mt-1">Redirecting to questions page...</p>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              {/* Username */}
-              <div className="space-y-3">
-                <Label htmlFor="username" className="text-gray-700 font-medium">
-                  Username
-                </Label>
-                <Input
-                  id="username"
-                  {...register("username")}
-                  type="text"
-                  placeholder="Enter your username"
-                  className="h-12 bg-gray-50 border-gray-300 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[#FF6B00]"
-                  disabled={isLoading}
-                />
-                {errors.username && (
-                  <p className="text-sm text-red-500 mt-1">{errors.username.message}</p>
-                )}
-              </div>
-
-              {/* First and Last Name */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-3">
-                  <Label htmlFor="firstName" className="text-gray-700 font-medium">
-                    First name
-                  </Label>
-                  <Input
-                    id="firstName"
-                    {...register("firstName")}
-                    type="text"
-                    placeholder="Enter first name"
-                    className="h-12 bg-gray-50 border-gray-300 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[#FF6B00]"
-                    disabled={isLoading}
-                  />
-                  {errors.firstName && (
-                    <p className="text-sm text-red-500 mt-1">{errors.firstName.message}</p>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <Label htmlFor="lastName" className="text-gray-700 font-medium">
-                    Last name
-                  </Label>
-                  <Input
-                    id="lastName"
-                    {...register("lastName")}
-                    type="text"
-                    placeholder="Enter last name"
-                    className="h-12 bg-gray-50 border-gray-300 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[#FF6B00]"
-                    disabled={isLoading}
-                  />
-                  {errors.lastName && (
-                    <p className="text-sm text-red-500 mt-1">{errors.lastName.message}</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Email */}
-              <div className="space-y-3">
-                <Label htmlFor="email" className="text-gray-700 font-medium">
-                  Email address
-                </Label>
-                <Input
-                  id="email"
-                  {...register("email")}
-                  type="email"
-                  placeholder="Enter your email"
-                  className="h-12 bg-gray-50 border-gray-300 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[#FF6B00]"
-                  disabled={isLoading}
-                />
-                {errors.email && (
-                  <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
-                )}
-              </div>
-
-              {/* Password */}
-              <div className="space-y-3">
-                <Label htmlFor="password" className="text-gray-700 font-medium">
-                  Password
-                </Label>
-                <Input
-                  id="password"
-                  {...register("password")}
-                  type="password"
-                  placeholder="Enter your password"
-                  className="h-12 bg-gray-50 border-gray-300 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-[#FF6B00]"
-                  disabled={isLoading}
-                />
-                {errors.password && (
-                  <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
-                )}
-              </div>
-
-              {/* Terms and Conditions */}
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="terms"
-                  {...register("terms")}
-                  className="h-4 w-4 rounded border-gray-300 text-[#FF6B00] focus:ring-[#FF6B00]"
-                  disabled={isLoading}
-                />
-                <Label htmlFor="terms" className="text-gray-600 text-sm">
-                  I agree to the{" "}
-                  <Link href="/privacy-policy" className="text-[#FF6B00] hover:text-[#FF8C00] underline">
-                    privacy policy
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="/terms" className="text-[#FF6B00] hover:text-[#FF8C00] underline">
-                    terms of service
-                  </Link>
-                </Label>
-              </div>
-              {errors.terms && (
-                <p className="text-sm text-red-500 mt-1">{errors.terms.message}</p>
-              )}
-
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                disabled={isLoading || registrationSuccess}
-                className="w-full h-12 bg-gradient-to-r from-[#FF6B00] to-[#FF8C00] hover:from-[#FF8C00] hover:to-[#FF9D33] text-white font-bold text-lg rounded-md"
-              >
-                {isLoading ? "Creating account..." : registrationSuccess ? "Account Created!" : "Agree and Join"}
-              </Button>
-
-              {/* Already have account link */}
-              <div className="text-center pt-4">
-                <p className="text-gray-600">
-                  Already have an account?{" "}
-                  <Link
-                    href="/login"
-                    className="font-semibold text-[#FF6B00] hover:text-[#FF8C00] underline underline-offset-2"
-                  >
-                    Sign in
-                  </Link>
-                </p>
-              </div>
-            </form>
-          </div>
-
-          {/* Mobile: About Section */}
-          <div className="lg:hidden bg-gradient-to-r from-[#FF6B00] to-[#FF8C00] rounded-xl p-6 text-center text-white">
-            <h2 className="text-2xl font-bold mb-4">Evangadi Networks</h2>
-            <p className="mb-4 text-sm">
-              No matter what stage of life you are in, whether you're just starting elementary school or being promoted to CEO of a Fortune 500 company, you have much to offer to those who are trying to follow in your footsteps.
-            </p>
-            <Button className="bg-white text-[#FF6B00] hover:bg-gray-100 font-bold px-6 py-2 rounded-md">
-              HOW IT WORKS
-            </Button>
-          </div>
-        </div>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* Email */}
+      <div>
+        <label htmlFor="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          {...register('email', { required: 'Email is required' })}
+        />
+        {errors.email && <p>{errors.email.message}</p>}
       </div>
 
-      {/* Right: About Section */}
-      <div className="hidden lg:flex w-1/2 flex-col justify-center items-center bg-gradient-to-b from-[#FF6B00] to-[#FF8C00] p-10 text-center text-white">
-        <div className="max-w-lg">
-          <h2 className="text-3xl font-bold mb-6">About</h2>
-          <h3 className="text-4xl font-bold mb-6">Evangadi Networks</h3>
-          <p className="mb-6 text-lg leading-relaxed">
-            No matter what stage of life you are in, whether you're just starting elementary school or being promoted to CEO of a Fortune 500 company, you have much to offer to those who are trying to follow in your footsteps.
-          </p>
-          <p className="mb-8 text-lg leading-relaxed">
-            Whether you are willing to share your knowledge or you are just looking to meet mentors of your own, please start by joining the network here.
-          </p>
-          <Button className="bg-white text-[#FF6B00] hover:bg-gray-100 font-bold px-8 py-3 rounded-md text-lg">
-            HOW IT WORKS
-          </Button>
-        </div>
+      {/* Password */}
+      <div>
+        <label htmlFor="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          {...register('password', { required: 'Password is required' })}
+        />
+        {errors.password && <p>{errors.password.message}</p>}
       </div>
-    </div>
+
+      {/* Terms Checkbox */}
+      <div className="flex items-center">
+        <input
+          type="checkbox"
+          id="terms"
+          {...register('terms', {
+            required: 'You must accept the terms and conditions',
+          })}
+          className="mr-2"
+        />
+        <label htmlFor="terms" className="text-sm">
+          I accept the terms and conditions
+        </label>
+      </div>
+      {errors.terms && (
+        <p className="text-red-500 text-sm">{errors.terms.message}</p>
+      )}
+
+      <button 
+        type="submit" 
+        disabled={isSubmitting}
+        className="px-4 py-2 bg-blue-500 text-white rounded"
+      >
+        Sign Up
+      </button>
+    </form>
   )
 }
 
-export default RegisterPage
+export default SignUpForm
