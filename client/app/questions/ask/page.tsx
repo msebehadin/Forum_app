@@ -36,54 +36,63 @@ const AskQuestionPage = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50 py-10 px-4">
-        <div className="max-w-5xl mx-auto space-y-10">
-          {/* Instructions */}
-          <div>
-            <h2 className="text-xl font-semibold mb-4">
-              Steps to write a good question
-            </h2>
-            <ul className="list-disc pl-6 space-y-2 text-gray-700">
-              <li>Summarize your problem in a one-line title.</li>
-              <li>Describe your problem in more detail.</li>
-              <li>Describe what you tried and what you expected.</li>
-              <li>Review your question and post it.</li>
-            </ul>
-          </div>
+      <div className="max-w-5xl mx-auto px-4 py-12 space-y-10">
+        <div className="hero-grid rounded-3xl p-8 lg:p-12 soft-shadow">
+          <p className="text-xs uppercase tracking-[0.3em] text-[#7b6f67] mb-3">
+            Ask with clarity
+          </p>
+          <h2 className="text-3xl md:text-4xl font-semibold text-[#1f1a17] mb-4">
+            Steps to write a helpful question
+          </h2>
+          <ul className="grid sm:grid-cols-2 gap-4 text-sm text-[#5f564f]">
+            <li className="rounded-2xl bg-white/70 border border-white/60 p-4">
+              Summarize your problem in a one-line title.
+            </li>
+            <li className="rounded-2xl bg-white/70 border border-white/60 p-4">
+              Describe your problem in more detail.
+            </li>
+            <li className="rounded-2xl bg-white/70 border border-white/60 p-4">
+              Explain what you tried and what you expected.
+            </li>
+            <li className="rounded-2xl bg-white/70 border border-white/60 p-4">
+              Review your question and post it.
+            </li>
+          </ul>
+        </div>
 
-          {/* Form Card */}
-          <div className="bg-white shadow-lg rounded-xl p-8">
-            <h2 className="text-2xl font-bold text-center mb-1">
-              Ask a public question
-            </h2>
-            <p className="text-center text-sm text-gray-500 mb-6">
-              Go to Question page
-            </p>
+        <div className="rounded-3xl border border-white/70 bg-white/80 p-8 shadow-sm">
+          <h2 className="text-2xl font-semibold text-center mb-1 text-[#1f1a17]">
+            Ask a public question
+          </h2>
+          <p className="text-center text-sm text-[#7b6f67] mb-6">
+            Be specific and share enough detail for a great answer.
+          </p>
 
-            <div className="space-y-6">
-              <Input
-                placeholder="Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
+          <div className="space-y-6">
+            <Input
+              placeholder="Question title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="h-12 bg-white border border-orange-100 focus-visible:ring-2 focus-visible:ring-[#ffb66d]"
+            />
 
-              <Textarea
-                placeholder="Question Description..."
-                rows={6}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
+            <Textarea
+              placeholder="Describe your question in detail..."
+              rows={6}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="bg-white border border-orange-100 focus-visible:ring-2 focus-visible:ring-[#ffb66d]"
+            />
 
-              {error && <p className="text-red-500 text-sm">{error}</p>}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
 
-              <Button
-                onClick={handleSubmit}
-                disabled={isLoading}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                {isLoading ? "Posting..." : "Post Your Question"}
-              </Button>
-            </div>
+            <Button
+              onClick={handleSubmit}
+              disabled={isLoading}
+              className="bg-[#1f6fe5] hover:bg-[#1a5ec6] rounded-full px-6"
+            >
+              {isLoading ? "Posting..." : "Post Your Question"}
+            </Button>
           </div>
         </div>
       </div>{" "}

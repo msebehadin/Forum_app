@@ -16,22 +16,24 @@ const QuestionItem = ({ id, title, username }: Props) => {
   return (
     <div
       onClick={() => router.push(`/questions/${id}`)}
-      className="flex items-center justify-between py-6 border-b cursor-pointer hover:bg-gray-50 px-2"
+      className="group flex items-center justify-between gap-6 rounded-2xl border border-white/70 bg-white/80 px-4 py-5 shadow-sm hover:shadow-md hover:border-white cursor-pointer transition-all"
     >
       <div className="flex items-center gap-4">
-        {/* Avatar */}
         <Avatar>
-          <AvatarFallback>👤</AvatarFallback>
+          <AvatarFallback className="bg-[#f1e7dc] text-[#7b6f67]">
+            {username?.charAt(0).toUpperCase() || "U"}
+          </AvatarFallback>
         </Avatar>
 
-        {/* Text */}
         <div>
-          <p className="font-medium">{title}</p>
-          <p className="text-sm text-gray-500">{username}</p>
+          <p className="font-semibold text-[#1f1a17] group-hover:text-[#1f6fe5] transition-colors">
+            {title}
+          </p>
+          <p className="text-sm text-[#6a605a]">Asked by {username}</p>
         </div>
       </div>
 
-      <ChevronRight className="text-gray-400" />
+      <ChevronRight className="text-[#b9b1ab] group-hover:text-[#1f6fe5]" />
     </div>
   );
 };

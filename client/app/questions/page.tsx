@@ -21,15 +21,28 @@ const QuestionPage = () => {
       .catch((err) => console.log(err));
   }, []);
   return (
-      <div className="max-w-5xl mx-auto py-10">
-      <div className="flex justify-between mb-6">
-        <h1 className="text-xl font-semibold">Questions</h1>
-        <Link href="/questions/ask" className="bg-blue-400 rounded-2xl p-1.5">
-          Ask Question
+    <div className="max-w-5xl mx-auto px-4 py-12">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10">
+        <div>
+          <p className="text-xs uppercase tracking-[0.3em] text-[#7b6f67] mb-2">
+            Community feed
+          </p>
+          <h1 className="text-3xl md:text-4xl font-semibold text-[#1f1a17]">
+            Questions from the community
+          </h1>
+          <p className="text-[#6a605a] mt-2">
+            Browse recent questions and share what you know.
+          </p>
+        </div>
+        <Link
+          href="/questions/ask"
+          className="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-[#1f6fe5] text-white font-semibold hover:bg-[#1a5ec6] transition-colors"
+        >
+          Ask a question
         </Link>
       </div>
 
-      <div>
+      <div className="space-y-4">
         {questions.map((q) => (
           <QuestionItem
             key={q.id}

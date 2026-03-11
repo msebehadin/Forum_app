@@ -44,15 +44,15 @@ const DetailQuestionPage = () => {
     fetchQuestion()
   }
 
-  if (loading) return <p className="text-center py-10">Loading...</p>
+  if (loading) return <p className="text-center py-10 text-[#7b6f67]">Loading...</p>
   
   if (error) {
     return (
       <div className="max-w-5xl mx-auto py-10 text-center">
         <p className="text-red-500 mb-4">{error}</p>
-        <button 
+        <button
           onClick={handleRetry}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="px-5 py-2.5 bg-[#1f6fe5] text-white rounded-full font-semibold hover:bg-[#1a5ec6]"
         >
           Try Again
         </button>
@@ -63,43 +63,46 @@ const DetailQuestionPage = () => {
   if (!question) return <p className="text-center py-10">Question not found</p>
 
   return (
-    <div className="max-w-5xl mx-auto py-10 px-4">
-      {/* Question */}
-      <h1 className="text-2xl font-semibold mb-2">
-        {question.title}
-      </h1>
-
-      <p className="text-gray-600 mb-8 whitespace-pre-line">
-        {question.description}
-      </p>
-
-      {/* Answers */}
-      <h2 className="text-lg font-semibold mb-4">
-        Answers ({question.answers?.length || 0})
-      </h2>
-
-      <div className="space-y-4">
-        {!question.answers || question.answers.length === 0 ? (
-          <p className="text-gray-500 italic">No answers yet. Be the first to answer!</p>
-        ) : (
-          question.answers.map((ans: any) => (
-            <AnswerItem
-              key={ans.id}
-              answer={ans.answer}
-              username={ans.user?.username || 'Anonymous'}
-              
-            />
-          ))
-        )}
+    <div className="max-w-5xl mx-auto py-12 px-4 space-y-10">
+      <div className="rounded-3xl border border-white/70 bg-white/80 p-8 shadow-sm">
+        <p className="text-xs uppercase tracking-[0.3em] text-[#7b6f67] mb-3">
+          Question
+        </p>
+        <h1 className="text-3xl md:text-4xl font-semibold text-[#1f1a17] mb-4">
+          {question.title}
+        </h1>
+        <p className="text-[#5f564f] leading-relaxed whitespace-pre-line">
+          {question.description}
+        </p>
       </div>
 
-      {/* Answer Form */}
-      <div className="mt-10">
-        <h3 className="text-lg font-semibold mb-4">Your Answer</h3>
-        <AnswerForm 
-          questionId={question.id} 
-          onAnswerPosted={handleAnswerPosted} 
-        />
+      <div>
+        <h2 className="text-lg font-semibold mb-4 text-[#1f1a17]">
+          Answers ({question.answers?.length || 0})
+        </h2>
+
+        <div className="space-y-4">
+          {!question.answers || question.answers.length === 0 ? (
+            <p className="text-[#7b6f67] italic">
+              No answers yet. Be the first to answer!
+            </p>
+          ) : (
+            question.answers.map((ans: any) => (
+              <AnswerItem
+                key={ans.id}
+                answer={ans.answer}
+                username={ans.user?.username || "Anonymous"}
+              />
+            ))
+          )}
+        </div>
+      </div>
+
+      <div className="rounded-3xl border border-white/70 bg-white/80 p-8 shadow-sm">
+        <h3 className="text-lg font-semibold mb-4 text-[#1f1a17]">
+          Your Answer
+        </h3>
+        <AnswerForm questionId={question.id} onAnswerPosted={handleAnswerPosted} />
       </div>
     </div>
   )

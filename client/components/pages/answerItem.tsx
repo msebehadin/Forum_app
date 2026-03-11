@@ -5,9 +5,11 @@ interface AnswerItemType {
 
 const AnswerItem = ({answer,username}:AnswerItemType) => {
   return (
-       <div className="border p-4 mb-3 rounded">
-      <p>{answer}</p>
-      <p className="text-sm text-gray-500 mt-2">— {username}</p>
+       <div className="rounded-2xl border border-white/70 bg-white/80 p-5 shadow-sm">
+      <p className="text-[#2e2a27] leading-relaxed">{answer}</p>
+      <p className="text-xs uppercase tracking-[0.25em] text-[#7b6f67] mt-4">
+        — {username}
+      </p>
     </div>
   )
 }
