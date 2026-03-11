@@ -10,16 +10,20 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
+const normalizeOrigin = (value: string) => value.trim().replace(/\/$/, "");
 const allowedOrigins = (process.env.CORS_ORIGIN
-  ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
-  : [process.env.BASE_URL || "http://localhost:3000"]
+  ? process.env.CORS_ORIGIN.split(",").map(normalizeOrigin)
+  : [process.env.BASE_URL || "http://localhost:3000", "http://localhost:3000"].map(
+      normalizeOrigin
+    )
 ).filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+      const normalizedOrigin = normalizeOrigin(origin);
+      if (allowedOrigins.includes(normalizedOrigin)) return callback(null, true);
       return callback(new Error(`CORS blocked: ${origin}`));
     },
     credentials: true,
