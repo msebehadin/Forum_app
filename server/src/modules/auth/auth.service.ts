@@ -1,10 +1,21 @@
 import { prisma } from '../../config/db'
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'  // Fixed: imported jwt directly
+import jwt from 'jsonwebtoken'
 
+type RegisterInput = {
+  email: string;
+  password: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+};
 
-export const register = async (data: { email: any; password: string; }) => {
+export const register = async (data: RegisterInput) => {
     try {
+        if (!data.email || !data.password || !data.username || !data.firstName || !data.lastName) {
+            throw new Error('All fields are required');
+        }
+
         // Check if user exists
         const exists = await prisma.user.findUnique({ 
             where: { email: data.email } 
@@ -26,6 +37,9 @@ export const register = async (data: { email: any; password: string; }) => {
         });
 
         // Generate JWT token after registration (optional)
+        if (!process.env.JWT_SECRET) {
+            throw new Error('JWT secret not configured');
+        }
         const token = jwt.sign(
             { id: user.id },
             process.env.JWT_SECRET!,
@@ -34,8 +48,6 @@ export const register = async (data: { email: any; password: string; }) => {
 
         // Return user data without password
         return {
-            success: true,
-            message: 'Registration successful',
             token,
             user: {
                 id: user.id,
@@ -48,7 +60,6 @@ export const register = async (data: { email: any; password: string; }) => {
         };
 
     } catch (error: any) {
-        console.error('Registration error:', error);
         throw error;
     }
 }
@@ -71,11 +82,15 @@ export const login = async (email: string, password: string) => {
   }
 
   // 3. Generate token
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT secret not configured");
+  }
   const token = jwt.sign(
     { id: user.id, email: user.email },
     process.env.JWT_SECRET!,
     { expiresIn: "7d" }
   );
 
-  return { token, user };
+  const { password: _password, ...safeUser } = user;
+  return { token, user: safeUser };
 };

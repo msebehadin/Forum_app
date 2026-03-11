@@ -9,14 +9,14 @@ export const authMiddleware = (
   next: NextFunction
 ) => {
   try {
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ message: "JWT secret not configured" });
+    }
     const authHeader = req.headers.authorization;
-    console.log(authHeader)
     if (!authHeader || !authHeader.startsWith("Bearer")) {
       return res.status(401).json({ message: "No token provided" });
     }
   const token = authHeader.split(' ')[1];
-    console.log('token: ',token)
-    // console.log(authHeader.split('  ')[0])
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
       id: string;
       email: string;

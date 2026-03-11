@@ -32,7 +32,7 @@ export const getQuestion = async (req: any, res: Response) => {
 export const updateQuestion = async (req: any, res: Response) => {
     const updateData = req.body;
     try {
-        const data = await service.updateQuestion(req.params.id, updateData);
+        const data = await service.updateQuestion(Number(req.params.id), updateData);
         res.json(data)
     } catch (err: any) {
         res.status(400).json({ message: err.message })
@@ -41,7 +41,7 @@ export const updateQuestion = async (req: any, res: Response) => {
 
 export const deleteQuestion = async (req: any, res: Response) => {
     try {
-        const data = await service.deleteQuestion(req.params.id);
+        const data = await service.deleteQuestion(Number(req.params.id));
         res.json(data)
     } catch (err: any) {
         res.status(400).json({ message: err.message })
