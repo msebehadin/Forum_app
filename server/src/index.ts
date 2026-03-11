@@ -10,12 +10,23 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
-app.use(cors({
-  origin: process.env.CORS_ORIGIN
-    ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
-    : process.env.BASE_URL || "http://localhost:3000",
-  credentials: true,
-}));
+const allowedOrigins = (process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
+  : [process.env.BASE_URL || "http://localhost:3000"]
+).filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error(`CORS blocked: ${origin}`));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 app.get('/', (_req, res) => res.json({ message: 'API running' }));
 
@@ -44,4 +55,3 @@ app.get('/api/health', async (_req, res) => {
 
 const PORT = Number(process.env.PORT) || 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
