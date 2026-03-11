@@ -31,8 +31,11 @@ export const register = async (data: RegisterInput) => {
         // Create user
         const user = await prisma.user.create({
             data: {
-                ...data,
-                password: hashedPassword
+                email: data.email,
+                username: data.username,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                password: hashedPassword,
             }
         });
 

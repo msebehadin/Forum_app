@@ -32,7 +32,14 @@ export const getQuestionId = async (id: string) => {
   });
   return question;
 };
-export const updateQuestion = async (id: number, data: any) => {
+export const updateQuestion = async (id: number, userId: number, data: any) => {
+  const existing = await prisma.question.findUnique({ where: { id } });
+  if (!existing) {
+    throw new Error("Question not found");
+  }
+  if (existing.userId !== userId) {
+    throw new Error("Forbidden");
+  }
   const updateQuestion = await prisma.question.update({
     where: { id },
     data: {
@@ -42,8 +49,15 @@ export const updateQuestion = async (id: number, data: any) => {
   });
   return updateQuestion
 };
-export const deleteQuestion=async (id:number)=>{
-  return  await prisma.question.delete({
-    where:{id}
+export const deleteQuestion = async (id: number, userId: number) => {
+  const existing = await prisma.question.findUnique({ where: { id } });
+  if (!existing) {
+    throw new Error("Question not found");
+  }
+  if (existing.userId !== userId) {
+    throw new Error("Forbidden");
+  }
+  return await prisma.question.delete({
+    where: { id }
   })
 }

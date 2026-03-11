@@ -30,19 +30,28 @@ export const updateAnswer = async (req: any, res: Response) => {
         const answerId = req.params.id
         const { answer } = req.body // Extract answer from body
         
-        const data = await answerService.updateAnswer(answerId, answer) // Pass only answer text
+        const data = await answerService.updateAnswer(
+            answerId,
+            Number(req.user?.id),
+            answer
+        )
         res.json(data)
     } catch (err: any) {
-        res.status(400).json({ message: err.message })
+        const status = err.message === 'Forbidden' ? 403 : 400;
+        res.status(status).json({ message: err.message })
     }
 }
 
 export const deleteAnswer = async (req: any, res: Response) => {
     try {
         const answerId = req.params.id
-        const data = await answerService.deleteAnswer(answerId)
+        const data = await answerService.deleteAnswer(
+            answerId,
+            Number(req.user?.id)
+        )
         res.json({ message: "Answer deleted successfully", data })
     } catch (err: any) {
-        res.status(400).json({ message: err.message })
+        const status = err.message === 'Forbidden' ? 403 : 400;
+        res.status(status).json({ message: err.message })
     }
 }

@@ -30,7 +30,14 @@ export const getAnswerByQuestion = async (questionId: string) => {
     });
 };
 
-export const updateAnswer = async (answerId: string, answerText: string) => {
+export const updateAnswer = async (answerId: string, userId: number, answerText: string) => {
+    const existing = await prisma.answer.findUnique({ where: { id: Number(answerId) } });
+    if (!existing) {
+        throw new Error("Answer not found");
+    }
+    if (existing.userId !== userId) {
+        throw new Error("Forbidden");
+    }
     return await prisma.answer.update({
         where: { id: Number(answerId) },
         data: { answer: answerText },
@@ -42,9 +49,15 @@ export const updateAnswer = async (answerId: string, answerText: string) => {
     });
 };
 
-export const deleteAnswer = async (answerId: string) => {
+export const deleteAnswer = async (answerId: string, userId: number) => {
+    const existing = await prisma.answer.findUnique({ where: { id: Number(answerId) } });
+    if (!existing) {
+        throw new Error("Answer not found");
+    }
+    if (existing.userId !== userId) {
+        throw new Error("Forbidden");
+    }
     return await prisma.answer.delete({
         where: { id: Number(answerId) }
     });
 };
-

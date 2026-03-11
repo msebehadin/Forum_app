@@ -20,15 +20,11 @@ const AnswerForm = ({ questionId, onAnswerPosted }: AnswerFormProps) => {
     setError(null)
 
     try {
-     const res= await api.post(`/answer/${questionId}`, { answer })
-      setAnswer(res.data)
+      await api.post(`/answer/${questionId}`, { answer })
+      setAnswer('')
       onAnswerPosted() // trigger refresh in parent
-      if(res){
-        console.log('the answer correctly posted')
-      }
-      console.log(res.data)
     } catch (err: any) {
-      setError(err.response?.data?.message || 'the answer is correctly posted')
+      setError(err.response?.data?.message || 'Failed to post answer')
     } finally {
       setLoading(false)
     }
