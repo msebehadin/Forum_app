@@ -2,28 +2,59 @@
 
 import Link from "next/link";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-
-type SignUpFormData = {
-  email: string;
-  password: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  terms: boolean;
-};
+import { registerSchema, registerInput } from "@/schema/auth";
+import { api } from "@/libs/axios";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const RegisterPage = () => {
+  const router = useRouter();
+  const { login } = useAuthStore();
+  const [apiError, setApiError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
-  } = useForm<SignUpFormData>();
+  } = useForm<registerInput>({
+    resolver: zodResolver(registerSchema),
+  });
 
-  const onSubmit = async (data: SignUpFormData) => {
-    console.log(data);
+  const onSubmit = async (data: registerInput) => {
+    setApiError(null);
+    try {
+      const res = await api.post("/auth/register", data);
+      const responseData = res.data;
+
+      if (!responseData?.success) {
+        setApiError(responseData?.message || "Registration failed");
+        return;
+      }
+
+      const token = responseData.data?.token;
+      const userData = responseData.data?.user;
+
+      if (!token || !userData) {
+        setApiError("Invalid response structure from server");
+        return;
+      }
+
+      login({ token, user: userData });
+      router.push("/questions");
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        "Registration failed";
+      setError("email", { message: msg });
+      setApiError(msg);
+    }
   };
 
   return (
@@ -142,6 +173,7 @@ const RegisterPage = () => {
                 {errors.terms && (
                   <p className="text-sm text-red-500">{errors.terms.message}</p>
                 )}
+                {apiError && <p className="text-sm text-red-500">{apiError}</p>}
 
                 <Button
                   type="submit"
